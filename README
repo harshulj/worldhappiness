@@ -1,0 +1,20 @@
+TASKS:  
+============
+1. Fetch Training data  
+    a. Fetch happy tweets
+        This fetches tweets based on happy filter.
+    b. Fetch sad tweets
+        This fetches sad tweets based on sad filter.
+2. Train Classifier
+    It uses happy and sad tweets and creates index which is then used for 
+    classifying incomming data.
+3. Start Classifying input
+    Fetches tweets. Each tweet is classified using two filters. 
+        a. Other classifies it based on location. 
+        b. One filter classifies it based on sad or happy index.
+
+TECHNOLOGY:
+=============
+1. Written in Python
+2. Uses Redis for storage
+3. Persistant data is stored in MongoDB
