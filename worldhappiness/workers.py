@@ -1,4 +1,11 @@
-class BaseRedisWorker(object):
+import json
+
+from redis import StrictRedis
+
+import config
+from connections import redis_connection_pool
+
+class BaseRedisWorker(StrictRedis):
     '''
     This defines the base functionality of a Redis worker.
     In Redis a queues is represented by just a name. Hence each worker will
@@ -8,6 +15,8 @@ class BaseRedisWorker(object):
 
     def __init__(self, queue):
         self.queue = queue
+        self.connectionPool = redis_connection_pool(1)
+        super(BaseRedisWorker, self).__init__(connection_pool=self.connectionPool)
 
     def run(self):
         raise NotImplementedError('All base classes should over ride run')
@@ -24,3 +33,4 @@ class TweetBulkSaveWorker(BaseRedisWorker):
         '''
         This function takes an array of tweets and pushes them to the queue.
         '''
+        self.lpush(self.queue, *data)

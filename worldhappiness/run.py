@@ -1,22 +1,22 @@
 import tweepy
 
 import filters
-from listeners import TwitterStreamListener
 from authorizers import auth
+from workers import TweetBulkSaveWorker
+from listeners import TwitterStreamListener
 
-api      = tweepy.API(auth)
 
 def main( mode = 1 ):
     follow = []
-
-    listen = TwitterStreamListener(api, 'test')
+    api  = tweepy.API(auth)
+    tweetBulkSaver = TweetBulkSaveWorker('bulk_raw_tweets')
+    listen = TwitterStreamListener(api, tweetBulkSaver, r'test')
     stream = tweepy.Stream(auth, listen)
 
     try:
         stream.filter(track = filters.happy, follow = follow)
         #stream.sample()
     except Exception as e:
-        print "error!"
         print e
         stream.disconnect()
 
