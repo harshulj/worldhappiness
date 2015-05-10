@@ -15,6 +15,6 @@ setup(
     ],
     entry_points ='''
         [console_scripts]
-        worldhappiness=run:cli
+        worldhappiness=worldhappiness.run:cli
     ''',
 )
