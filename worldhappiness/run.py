@@ -1,3 +1,4 @@
+import click
 import tweepy
 
 import filters
@@ -19,6 +20,10 @@ def main( mode = 1 ):
     except Exception as e:
         print e
         stream.disconnect()
+
+@click.command()
+def cli():
+    print 'Hello World'
 
 if __name__ == '__main__':
     main()
