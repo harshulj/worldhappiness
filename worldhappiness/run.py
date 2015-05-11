@@ -7,19 +7,6 @@ from workers import TweetBulkSaveWorker
 from listeners import TwitterStreamListener
 
 
-def main( mode = 1 ):
-    api  = tweepy.API(auth)
-    tweetBulkSaver = TweetBulkSaveWorker('bulk_raw_tweets')
-    listen = TwitterStreamListener(api, tweetBulkSaver, r'test')
-    stream = tweepy.Stream(auth, listen)
-
-    try:
-        stream.filter(track = filters.happy)
-    except Exception as e:
-        print e
-        stream.disconnect()
-
-
 # Following defines the group of commands for click
 @click.group()
 def cli():
@@ -27,26 +14,32 @@ def cli():
 
 
 # Following are the commands available for worldhappiness
-@cli.command('collect_happy')
+@cli.command('collect')
 @click.option('--number', default=10000,
         help='Number of tweets to be collected.' )
-def collect_happy(number):
+@click.argument('type', nargs=1)
+def collect(number, type):
     '''
     This command collects happy tweets and saves them to redis.
     '''
     click.echo(click.style('Collecting %d Happy Tweets' % number, fg='green'))
+
+    if type == 'happy':
+        queue   = 'raw_happy_tweets'
+        filter  = filters.happy
+    elif type == 'sad':
+        queue   = 'raw_sad_tweets'
+        filter  = filters.sad
+
     api             = tweepy.API(auth)
-    tweetBulkSaver  = TweetBulkSaveWorker('raw_happy_tweets')
+    tweetBulkSaver  = TweetBulkSaveWorker(queue)
     listen          = TwitterStreamListener(
-                            api,
-                            tweetBulkSaver,
-                            number,
-                            r'test'
-                        )
+                            api, tweetBulkSaver,
+                            number, r'test' )
     stream          = tweepy.Stream(auth, listen)
 
     try:
-        stream.filter(track = filters.happy)
+        stream.filter(track = filter)
     except Exception as e:
         print e
         stream.disconnect()
